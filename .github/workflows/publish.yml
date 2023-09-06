@@ -4,7 +4,7 @@ on:
 name: Publish image to GHCR
 
 jobs:
-  publish:
+  debian:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -18,10 +18,15 @@ jobs:
 
       - name: Install Nixpacks
         run: curl -sSL https://nixpacks.com/install.sh | bash
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
         
       - name: Set up Docker Buildx
         id: buildx
         uses: docker/setup-buildx-action@v2
+        with:
+          platforms: linux/amd64,linux/arm64
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v2
@@ -36,10 +41,11 @@ jobs:
 
       - name: Build with Nixpacks
         id: nixpacks
-        run: nixpacks build . --platform linux/amd64 --platform linux/arm64 --name railway-utils
+        run: nixpacks build . --name railway-utils
 
-      - name: Push
-        run: docker push railway-util:latest
+      - name: Build with Nixpacks
+        id: nixpacks
+        run: nixpacks build . --name railway-utils
       
       # - name: Build
       #   uses: docker/build-push-action@v4
