@@ -41,11 +41,7 @@ jobs:
 
       - name: Build with Nixpacks
         id: nixpacks
-        run: nixpacks build . --name railway-utils
-
-      - name: Build with Nixpacks
-        id: nixpacks
-        run: nixpacks build . --name railway-utils
+        run: nixpacks build . --platform linux/amd64 --platform linux/arm64 --name railway-utils
       
       # - name: Build
       #   uses: docker/build-push-action@v4
