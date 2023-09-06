@@ -4,7 +4,7 @@ on:
 name: Publish image to GHCR
 
 jobs:
-  debian:
+  publish:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -56,4 +56,4 @@ jobs:
         with:
           platforms: linux/arm64, linux/amd64
           push: true
-          tags: ghcr.io/coffee-cup/railway-utils:latest, ghcr.io/railway-utils:${{ steps.date.outputs.date }}
+          tags: ghcr.io/coffee-cup/railway-utils:latest, ghcr.io/coffee-cup/railway-utils:${{ steps.date.outputs.date }}
