@@ -16,8 +16,8 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v3
 
-      # - name: Install Nixpacks
-      #   run: curl -sSL https://nixpacks.com/install.sh | bash
+      - name: Install Nixpacks
+        run: curl -sSL https://nixpacks.com/install.sh | bash
         
       - name: Set up Docker Buildx
         id: buildx
@@ -34,16 +34,17 @@ jobs:
         id: date
         run: echo "::set-output name=date::$(date +%s)"
 
-      - name: Build
-        run: docker build . -t railway-utils
+      - name: Build with Nixpacks
+        id: nixpacks
+        run: nixpacks build . --platform linux/amd64 --platform linux/arm64 --name railway-utils
 
       - name: Push
-        run: |
-          docker tag railway-utils ghcr.io/coffee-cup/railway-utils:latest
-          docker push ghcr.io/coffee-cup/railway-utils:latest
+        run: docker push railway-util:latest
       
-      # - name: Build and push
+      # - name: Build
       #   uses: docker/build-push-action@v4
       #   with:
-      #     push: true
+      #     context: base/debian
+      #     platforms: linux/arm64, linux/amd64, linux/386
+      #     push: ${{ github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
       #     tags: ghcr.io/coffee-cup/railway-utils:latest, ghcr.io/railway-utils:${{ steps.date.outputs.date }}
