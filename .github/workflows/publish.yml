@@ -43,18 +43,17 @@ jobs:
       #   id: nixpacks
       #   run: nixpacks build . --platform linux/amd64 --platform linux/arm64 --name railway-utils
 
-      - name: Build
-        run: |
-          docker buildx build . --platform=linux/arm64,linux/amd64 -t railway-utils
-          docker tag railway-utils ghcr.io/railway-utils:latest
-
-      - name: Push
-        run: docker push ghcr.io/railway-utils:latest
-      
       # - name: Build
-      #   uses: docker/build-push-action@v4
-      #   with:
-      #     context: base/debian
-      #     platforms: linux/arm64, linux/amd64, linux/386
-      #     push: ${{ github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
-      #     tags: ghcr.io/coffee-cup/railway-utils:latest, ghcr.io/railway-utils:${{ steps.date.outputs.date }}
+      #   run: |
+      #     docker buildx build . --platform=linux/arm64,linux/amd64 -t railway-utils
+      #     docker tag railway-utils ghcr.io/railway-utils:latest
+
+      # - name: Push
+      #   run: docker push ghcr.io/railway-utils:latest
+      
+      - name: Build
+        uses: docker/build-push-action@v4
+        with:
+          platforms: linux/arm64, linux/amd64
+          push: true
+          tags: ghcr.io/coffee-cup/railway-utils:latest, ghcr.io/railway-utils:${{ steps.date.outputs.date }}
