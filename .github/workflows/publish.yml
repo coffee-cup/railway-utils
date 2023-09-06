@@ -40,9 +40,17 @@ jobs:
         id: date
         run: echo "::set-output name=date::$(date +%s)"
 
-      - name: Build with Nixpacks
-        id: nixpacks
-        run: nixpacks build . --platform linux/amd64 --platform linux/arm64 --name railway-utils
+      # - name: Build with Nixpacks
+      #   id: nixpacks
+      #   run: nixpacks build . --platform linux/amd64 --platform linux/arm64 --name railway-utils
+
+      - name: Build
+        run: |
+          docker buildx build . --platform=linux/arm64,linux/amd64 -t railway-utils
+          docker tag railway-utils ghcr.io/railway-utils:latest
+
+      - name: Push
+        run: docker push ghcr.io/railway-utils:latest
       
       # - name: Build
       #   uses: docker/build-push-action@v4
