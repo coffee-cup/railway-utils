@@ -16,8 +16,8 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v3
 
-      - name: Install Nixpacks
-        run: curl -sSL https://nixpacks.com/install.sh | bash
+      # - name: Install Nixpacks
+      #   run: curl -sSL https://nixpacks.com/install.sh | bash
         
       - name: Set up Docker Buildx
         id: buildx
@@ -34,9 +34,9 @@ jobs:
         id: date
         run: echo "::set-output name=date::$(date +%s)"
 
-      - name: Build with Nixpacks
-        id: nixpacks
-        run: nixpacks build . --name railway-utils
+      # - name: Build with Nixpacks
+      #   id: nixpacks
+      #   run: nixpacks build . --name railway-utils
 
       # - name: Push
       #   run: |
