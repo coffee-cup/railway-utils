@@ -34,17 +34,16 @@ jobs:
         id: date
         run: echo "::set-output name=date::$(date +%s)"
 
-      # - name: Build with Nixpacks
-      #   id: nixpacks
-      #   run: nixpacks build . --name railway-utils
+      - name: Build
+        run: docker build . -t railway-utils
 
-      # - name: Push
-      #   run: |
-      #     docker tag railway-utils ghcr.io/coffee-cup/railway-utils:latest
-      #     docker push ghcr.io/coffee-cup/railway-utils:latest
+      - name: Push
+        run: |
+          docker tag railway-utils ghcr.io/coffee-cup/railway-utils:latest
+          docker push ghcr.io/coffee-cup/railway-utils:latest
       
-      - name: Build and push
-        uses: docker/build-push-action@v4
-        with:
-          push: ${{ github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
-          tags: ghcr.io/coffee-cup/railway-utils:latest, ghcr.io/railway-utils:${{ steps.date.outputs.date }}
+      # - name: Build and push
+      #   uses: docker/build-push-action@v4
+      #   with:
+      #     push: true
+      #     tags: ghcr.io/coffee-cup/railway-utils:latest, ghcr.io/railway-utils:${{ steps.date.outputs.date }}
