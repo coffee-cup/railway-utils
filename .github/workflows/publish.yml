@@ -4,7 +4,7 @@ on:
 name: Publish image to GHCR
 
 jobs:
-  debian:
+  publish:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -39,7 +39,9 @@ jobs:
         run: nixpacks build . --name railway-utils
 
       - name: Push
-        run: docker push railway-util:latest
+        run: |
+          docker tag railway-utils ghcr.io/coffee-cup/railway-utils:latest
+          docker push ghcr.io/coffee-cup/railway-utils:latest
       
       # - name: Build
       #   uses: docker/build-push-action@v4
