@@ -4,23 +4,18 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon src/index.ts",
-    "build": "tsc -p tsconfig.json && node dist/variables.js",
-    "start": "node dist/index.js",
-    "clean": "rm -rf dist"
+    "dev": "bun --watch src/index.ts",
+    "start": "bun run src/index.ts",
+    "clean": "rm -rf dist",
+    "check": "tsc --noEmit"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "engines": {
-    "node": "18.x"
-  },
   "devDependencies": {
+    "@types/bun": "^1.1.13",
     "@types/node": "^20.5.9",
-    "ts-node": "^10.9.1",
     "typescript": "^5.2.2"
   },
-  "dependencies": {
-    "fastify": "^4.22.2"
-  }
+  "dependencies": {}
 }

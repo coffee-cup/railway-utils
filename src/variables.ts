@@ -26,6 +26,6 @@ export const outputVariables = () => {
   console.log("");
 };
 
-if (require.main === module) {
+if (import.meta.main) {
   outputVariables();
 }
