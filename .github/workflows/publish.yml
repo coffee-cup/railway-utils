@@ -36,6 +36,10 @@ jobs:
         id: date
         run: echo "::set-output name=date::$(date +%s)"
 
+      - name: Append build timestamp to source
+        run: |
+          echo 'console.log("Built on: '$(date -u +%Y-%m-%dT%H:%M:%SZ)'");' >> src/index.ts
+
       - name: Build
         uses: docker/build-push-action@v4
         with:
