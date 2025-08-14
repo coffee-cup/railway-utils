@@ -17,6 +17,7 @@ jobs:
     with:
       version: ${{ needs.bump.outputs.new_version }}
     permissions:
-      contents: read
+      contents: write
+      pull-requests: write
       packages: write
       id-token: write
