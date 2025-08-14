@@ -1,5 +1,15 @@
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish'
+        required: false
+        type: string
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
 
 name: Publish image to GHCR
 
@@ -35,14 +45,50 @@ jobs:
       - name: Get current date
         id: date
         run: echo "date=$(date +%Y%m%d-%H%M%S)" >> $GITHUB_OUTPUT
+      
+      - name: Parse version
+        id: parse
+        run: |
+          VERSION="${{ inputs.version }}"
+          
+          if [ -z "$VERSION" ]; then
+            echo "No version provided, using timestamp tags only"
+            echo "use_version=false" >> $GITHUB_OUTPUT
+          else
+            VERSION=${VERSION#v}
+            IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
+            
+            echo "use_version=true" >> $GITHUB_OUTPUT
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+            echo "major=$MAJOR" >> $GITHUB_OUTPUT
+            echo "minor=$MINOR" >> $GITHUB_OUTPUT
+            
+            echo "Parsed version: v$VERSION (major: $MAJOR, minor: $MINOR, patch: $PATCH)"
+          fi
 
       - name: Append build timestamp to source
         run: |
           echo 'console.log("Built on: '$(date -u +%Y-%m-%dT%H:%M:%SZ)'");' >> src/index.ts
 
-      - name: Build
+      - name: Build and push (with version)
+        if: steps.parse.outputs.use_version == 'true'
         uses: docker/build-push-action@v4
         with:
           platforms: linux/arm64, linux/amd64
           push: true
-          tags: ghcr.io/coffee-cup/railway-utils:latest, ghcr.io/coffee-cup/railway-utils:${{ steps.date.outputs.date }}
+          tags: |
+            ghcr.io/coffee-cup/railway-utils:latest
+            ghcr.io/coffee-cup/railway-utils:v${{ steps.parse.outputs.version }}
+            ghcr.io/coffee-cup/railway-utils:v${{ steps.parse.outputs.major }}
+            ghcr.io/coffee-cup/railway-utils:v${{ steps.parse.outputs.major }}.${{ steps.parse.outputs.minor }}
+            ghcr.io/coffee-cup/railway-utils:${{ steps.date.outputs.date }}
+            
+      - name: Build and push (timestamp only)
+        if: steps.parse.outputs.use_version == 'false'
+        uses: docker/build-push-action@v4
+        with:
+          platforms: linux/arm64, linux/amd64
+          push: true
+          tags: |
+            ghcr.io/coffee-cup/railway-utils:latest
+            ghcr.io/coffee-cup/railway-utils:${{ steps.date.outputs.date }}

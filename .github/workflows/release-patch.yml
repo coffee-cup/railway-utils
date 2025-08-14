@@ -1,0 +1,22 @@
+name: Release Patch Version
+
+on:
+  workflow_dispatch:
+
+jobs:
+  bump:
+    uses: ./.github/workflows/bump-version.yml
+    with:
+      bump_type: patch
+    permissions:
+      contents: write
+      
+  build:
+    needs: bump
+    uses: ./.github/workflows/publish.yml
+    with:
+      version: ${{ needs.bump.outputs.new_version }}
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
