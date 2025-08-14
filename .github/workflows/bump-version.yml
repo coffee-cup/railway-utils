@@ -6,10 +6,10 @@ on:
       bump_type:
         required: true
         type: string
-        description: 'Version bump type: patch, minor, or major'
+        description: "Version bump type: patch, minor, or major"
     outputs:
       new_version:
-        description: 'The new version number'
+        description: "The new version number"
         value: ${{ jobs.bump.outputs.new_version }}
 
 jobs:
@@ -19,13 +19,13 @@ jobs:
       contents: write
     outputs:
       new_version: ${{ steps.version.outputs.new_version }}
-    
+
     steps:
       - name: Checkout sources
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          
+
       - name: Get latest version
         id: get_version
         run: |
@@ -35,15 +35,15 @@ jobs:
           fi
           echo "latest_tag=$LATEST_TAG" >> $GITHUB_OUTPUT
           echo "Found latest version: $LATEST_TAG"
-          
+
       - name: Calculate new version
         id: version
         run: |
           LATEST="${{ steps.get_version.outputs.latest_tag }}"
           VERSION=${LATEST#v}
-          
+
           IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
-          
+
           case "${{ inputs.bump_type }}" in
             patch)
               PATCH=$((PATCH + 1))
@@ -62,22 +62,22 @@ jobs:
               exit 1
               ;;
           esac
-          
+
           NEW_VERSION="v${MAJOR}.${MINOR}.${PATCH}"
           echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
           echo "major=$MAJOR" >> $GITHUB_OUTPUT
           echo "minor=$MINOR" >> $GITHUB_OUTPUT
           echo "patch=$PATCH" >> $GITHUB_OUTPUT
-          
+
           echo "Calculated new version: $NEW_VERSION"
-          
+
       - name: Create git tag
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          
+
           NEW_VERSION="${{ steps.version.outputs.new_version }}"
           git tag -a "$NEW_VERSION" -m "Release $NEW_VERSION"
           git push origin "$NEW_VERSION"
-          
+
           echo "Created and pushed tag: $NEW_VERSION"

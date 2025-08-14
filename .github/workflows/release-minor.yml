@@ -10,7 +10,7 @@ jobs:
       bump_type: minor
     permissions:
       contents: write
-      
+
   build:
     needs: bump
     uses: ./.github/workflows/publish.yml
