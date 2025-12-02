@@ -1,21 +1,25 @@
 {
-  "name": "output-envs",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "bun-react-template",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "bun --watch src/index.ts",
-    "start": "bun run src/index.ts",
-    "clean": "rm -rf dist",
-    "check": "tsc --noEmit"
+    "dev": "bun --hot src/index.tsx",
+    "start": "NODE_ENV=production bun src/index.tsx",
+    "check": "tsc --noEmit",
+    "build": "bun run build.ts"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "dependencies": {
+    "@tanstack/react-query": "^5.90.11",
+    "bun-plugin-tailwind": "^0.1.2",
+    "react": "^19",
+    "react-dom": "^19",
+    "tailwindcss": "^4.1.11"
+  },
   "devDependencies": {
-    "@types/bun": "^1.1.13",
-    "@types/node": "^20.5.9",
-    "typescript": "^5.2.2"
-  },
-  "dependencies": {}
+    "@types/bun": "latest",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "typescript": "^5.9.3"
+  }
 }

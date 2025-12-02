@@ -1,0 +1,9 @@
+[tools]
+bun = "latest"
+node = "24"
+
+[tasks]
+dev = "PORT=4444 bun run dev"
+start = "PORT=4444 bun run start"
+check = "bun run check"
+build-docker = "docker build -t railway-utils ."

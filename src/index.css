@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    @apply text-[rgba(255,255,255,0.87)] bg-[#0a0a0a] font-sans;
+  }
+
+  body {
+    @apply min-w-[320px] min-h-screen m-0;
+  }
+}
+
+.float-up {
+  position: fixed;
+  pointer-events: none;
+  font-size: 1.5rem;
+  animation: float-up 0.8s ease-out forwards;
+  transform: translate(-50%, -50%);
+}
+
+@keyframes float-up {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -150%) scale(1.5);
+  }
+}

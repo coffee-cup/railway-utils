@@ -1,31 +1,21 @@
-const maybeAddVariables = (variables: Record<string, string>, name: string) => {
-  const value = process.env[name];
-  if (value) {
-    variables[name] = value;
-  }
-};
+export function getVariables(): Record<string, string> {
+  const vars: Record<string, string> = {};
 
-export const getVariables = () => {
-  const variables: Record<string, string> = {};
-
-  for (const [name, value] of Object.entries(process.env)) {
-    if (name.startsWith("RAILWAY_") && value != null) {
-      variables[name] = value;
+  for (const [key, value] of Object.entries(process.env)) {
+    if (key.startsWith("RAILWAY_") && value !== undefined) {
+      vars[key] = value;
     }
   }
 
-  maybeAddVariables(variables, "PORT");
-  return variables;
-};
-
-export const outputVariables = () => {
-  const variables = getVariables();
-  for (const [name, value] of Object.entries(variables)) {
-    console.log(`${name} = ${value}`);
+  if (process.env.PORT) {
+    vars.PORT = process.env.PORT;
   }
-  console.log("");
-};
 
-if (import.meta.main) {
-  outputVariables();
+  return vars;
+}
+
+export function toEnvFormat(vars: Record<string, string>): string {
+  return Object.entries(vars)
+    .map(([key, value]) => `${key}=${value}`)
+    .join("\n");
 }
