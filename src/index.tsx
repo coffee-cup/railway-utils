@@ -16,6 +16,11 @@ const server = serve({
         },
         variables: getVariables(),
       }),
+
+    "/api/crash": () => {
+      console.log("Crash requested, exiting...");
+      process.exit(1);
+    },
   },
 
   development: process.env.NODE_ENV !== "production" && {

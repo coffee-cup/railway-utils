@@ -56,6 +56,18 @@ export function App() {
             </section>
 
             <section>
+              <h2 className="text-2xl font-bold mb-4">Actions</h2>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => fetch("/api/crash").finally(() => location.reload())}
+                  className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium cursor-pointer"
+                >
+                  Crash
+                </button>
+              </div>
+            </section>
+
+            <section>
               <h2 className="text-2xl font-bold mb-4">Railway Variables</h2>
               {Object.keys(data.variables).length === 0 ? (
                 <p className="text-gray-400">No RAILWAY_* variables found</p>
