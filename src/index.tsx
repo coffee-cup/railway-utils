@@ -1,6 +1,9 @@
 import { serve } from "bun";
 import index from "./index.html";
-import { getVariables } from "./variables";
+import { getVariables, toEnvFormat } from "./variables";
+
+const variables = getVariables();
+console.log(toEnvFormat(variables));
 
 const serverStartTime = new Date().toISOString();
 
