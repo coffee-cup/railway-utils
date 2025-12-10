@@ -7,7 +7,13 @@ console.log(toEnvFormat(variables));
 
 const serverStartTime = new Date().toISOString();
 
+const port = process.env.PORT || 8080;
+console.log(`Server running on port ${port}`);
+
 const server = serve({
+  hostname: "::",
+  port,
+
   routes: {
     "/*": index,
 
