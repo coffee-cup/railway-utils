@@ -32,8 +32,9 @@ const server = serve({
   routes: {
     "/*": index,
 
-    "/api/info": () =>
-      Response.json({
+    "/api/info": () => {
+      console.log("GET /api/info");
+      return Response.json({
         info: {
           serverStartTime,
           requestTime: new Date().toISOString(),
@@ -41,7 +42,8 @@ const server = serve({
           hasPostgres,
         },
         variables: getVariables(),
-      }),
+      });
+    },
 
     "/api/crash": () => {
       console.log("Crash requested, exiting...");
@@ -49,6 +51,7 @@ const server = serve({
     },
 
     "/api/redis": async (req) => {
+      console.log("GET /api/redis");
       if (!hasRedis) {
         return Response.json({ error: "REDIS_URL not configured" }, { status: 503 });
       }
@@ -77,6 +80,7 @@ const server = serve({
     },
 
     "/api/postgres": async (req) => {
+      console.log("GET /api/postgres");
       if (!hasPostgres) {
         return Response.json({ error: "DATABASE_URL not configured" }, { status: 503 });
       }
