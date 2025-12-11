@@ -48,16 +48,20 @@ const server = serve({
       process.exit(1);
     },
 
-    "/api/redis": async () => {
+    "/api/redis": async (req) => {
       if (!hasRedis) {
         return Response.json({ error: "REDIS_URL not configured" }, { status: 503 });
       }
 
+      const url = new URL(req.url);
+      const shouldIncrement = url.searchParams.get("increment") === "true";
       const client = new RedisClient(process.env.REDIS_URL);
 
       try {
         const start = performance.now();
-        const count = await client.incr("test-counter");
+        const count = shouldIncrement
+          ? await client.incr("test-counter")
+          : await client.get("test-counter");
         const elapsed = performance.now() - start;
 
         client.close();
@@ -72,24 +76,28 @@ const server = serve({
       }
     },
 
-    "/api/postgres": async () => {
+    "/api/postgres": async (req) => {
       if (!hasPostgres) {
         return Response.json({ error: "DATABASE_URL not configured" }, { status: 503 });
       }
 
+      const url = new URL(req.url);
+      const shouldIncrement = url.searchParams.get("increment") === "true";
       await initPostgres();
 
       try {
         const start = performance.now();
-        const result = await sql`
-          INSERT INTO counter (id, value) VALUES ('test', 1)
-          ON CONFLICT (id) DO UPDATE SET value = counter.value + 1
-          RETURNING value
-        `;
+        const result = shouldIncrement
+          ? await sql`
+              INSERT INTO counter (id, value) VALUES ('test', 1)
+              ON CONFLICT (id) DO UPDATE SET value = counter.value + 1
+              RETURNING value
+            `
+          : await sql`SELECT value FROM counter WHERE id = 'test'`;
         const elapsed = performance.now() - start;
 
         return Response.json({
-          count: result[0].value,
+          count: result[0]?.value ?? 0,
           ms: Math.round(elapsed * 100) / 100,
         });
       } catch (e) {

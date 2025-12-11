@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, type MouseEvent } from "react";
 
 interface ApiResponse {
@@ -39,6 +39,7 @@ function Copyable({ children, value, className }: { children: React.ReactNode; v
 }
 
 export function App() {
+  const queryClient = useQueryClient();
   const { data, error } = useQuery({
     queryKey: ["info"],
     queryFn: () => fetch("/api/info").then(r => r.json() as Promise<ApiResponse>),
@@ -103,7 +104,7 @@ export function App() {
                     )}
                   </div>
                   <button
-                    onClick={() => redisQuery.refetch()}
+                    onClick={() => fetch("/api/redis?increment=true").then(r => r.json()).then(data => queryClient.setQueryData(["redis"], data))}
                     disabled={redisQuery.isFetching}
                     className="bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white px-4 py-2 rounded-lg font-medium cursor-pointer w-fit"
                   >
@@ -125,7 +126,7 @@ export function App() {
                     )}
                   </div>
                   <button
-                    onClick={() => postgresQuery.refetch()}
+                    onClick={() => fetch("/api/postgres?increment=true").then(r => r.json()).then(data => queryClient.setQueryData(["postgres"], data))}
                     disabled={postgresQuery.isFetching}
                     className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-4 py-2 rounded-lg font-medium cursor-pointer w-fit"
                   >
