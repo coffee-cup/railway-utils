@@ -2,13 +2,19 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useCallback, type MouseEvent } from "react";
 
 interface ApiResponse {
-  info: { serverStartTime: string; requestTime: string; hasRedis: boolean };
+  info: { serverStartTime: string; requestTime: string; hasRedis: boolean; hasPostgres: boolean };
   variables: Record<string, string>;
 }
 
 interface RedisResponse {
-  ok?: boolean;
-  setGetDelMs?: number;
+  count?: number;
+  ms?: number;
+  error?: string;
+}
+
+interface PostgresResponse {
+  count?: number;
+  ms?: number;
   error?: string;
 }
 
@@ -40,6 +46,10 @@ export function App() {
 
   const redisMutation = useMutation({
     mutationFn: () => fetch("/api/redis").then(r => r.json() as Promise<RedisResponse>),
+  });
+
+  const postgresMutation = useMutation({
+    mutationFn: () => fetch("/api/postgres").then(r => r.json() as Promise<PostgresResponse>),
   });
 
   return (
@@ -85,7 +95,7 @@ export function App() {
                     {redisMutation.data?.error ? (
                       <span className="text-red-400">{redisMutation.data.error}</span>
                     ) : (
-                      <span className="text-green-400">SET + GET + DEL took {redisMutation.data?.setGetDelMs}ms</span>
+                      <span className="text-green-400">Counter: {redisMutation.data?.count} ({redisMutation.data?.ms}ms)</span>
                     )}
                   </div>
                   <button
@@ -93,7 +103,29 @@ export function App() {
                     disabled={redisMutation.isPending}
                     className="bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white px-4 py-2 rounded-lg font-medium cursor-pointer w-fit"
                   >
-                    {redisMutation.isPending ? "Testing..." : "Test Redis"}
+                    {redisMutation.isPending ? "Testing..." : "Increment Counter"}
+                  </button>
+                </div>
+              </section>
+            )}
+
+            {data.info.hasPostgres && (
+              <section>
+                <h2 className="text-2xl font-bold mb-4">Postgres</h2>
+                <div className="grid gap-4">
+                  <div className={`bg-[#141414] rounded-lg px-4 py-2 font-mono text-sm w-fit min-h-[36px] ${postgresMutation.data ? "" : "invisible"} ${postgresMutation.isPending ? "opacity-50" : ""}`}>
+                    {postgresMutation.data?.error ? (
+                      <span className="text-red-400">{postgresMutation.data.error}</span>
+                    ) : (
+                      <span className="text-green-400">Counter: {postgresMutation.data?.count} ({postgresMutation.data?.ms}ms)</span>
+                    )}
+                  </div>
+                  <button
+                    onClick={() => postgresMutation.mutate()}
+                    disabled={postgresMutation.isPending}
+                    className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-4 py-2 rounded-lg font-medium cursor-pointer w-fit"
+                  >
+                    {postgresMutation.isPending ? "Testing..." : "Increment Counter"}
                   </button>
                 </div>
               </section>
