@@ -9,17 +9,18 @@ console.log(toEnvFormat(variables));
 const serverStartTime = new Date().toISOString();
 const hasRedis = !!process.env.REDIS_URL;
 const hasPostgres = !!process.env.DATABASE_URL;
+let postgresInited = false;
 
 async function initPostgres() {
-  if (!hasPostgres) return;
+  if (postgresInited) return;
   await sql`
     CREATE TABLE IF NOT EXISTS counter (
       id TEXT PRIMARY KEY,
       value INTEGER NOT NULL DEFAULT 0
     )
   `;
+  postgresInited = true;
 }
-initPostgres();
 
 const port = process.env.PORT || 8080;
 console.log(`Server running on port ${port}`);
@@ -75,6 +76,8 @@ const server = serve({
       if (!hasPostgres) {
         return Response.json({ error: "DATABASE_URL not configured" }, { status: 503 });
       }
+
+      await initPostgres();
 
       try {
         const start = performance.now();

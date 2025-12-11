@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useCallback, type MouseEvent } from "react";
 
 interface ApiResponse {
@@ -44,12 +44,16 @@ export function App() {
     queryFn: () => fetch("/api/info").then(r => r.json() as Promise<ApiResponse>),
   });
 
-  const redisMutation = useMutation({
-    mutationFn: () => fetch("/api/redis").then(r => r.json() as Promise<RedisResponse>),
+  const redisQuery = useQuery({
+    queryKey: ["redis"],
+    queryFn: () => fetch("/api/redis").then(r => r.json() as Promise<RedisResponse>),
+    enabled: !!data?.info.hasRedis,
   });
 
-  const postgresMutation = useMutation({
-    mutationFn: () => fetch("/api/postgres").then(r => r.json() as Promise<PostgresResponse>),
+  const postgresQuery = useQuery({
+    queryKey: ["postgres"],
+    queryFn: () => fetch("/api/postgres").then(r => r.json() as Promise<PostgresResponse>),
+    enabled: !!data?.info.hasPostgres,
   });
 
   return (
@@ -91,19 +95,19 @@ export function App() {
               <section>
                 <h2 className="text-2xl font-bold mb-4">Redis</h2>
                 <div className="grid gap-4">
-                  <div className={`bg-[#141414] rounded-lg px-4 py-2 font-mono text-sm w-fit min-h-[36px] ${redisMutation.data ? "" : "invisible"} ${redisMutation.isPending ? "opacity-50" : ""}`}>
-                    {redisMutation.data?.error ? (
-                      <span className="text-red-400">{redisMutation.data.error}</span>
+                  <div className={`bg-[#141414] rounded-lg px-4 py-2 font-mono text-sm w-fit min-h-[36px] ${redisQuery.data ? "" : "invisible"} ${redisQuery.isFetching ? "opacity-50" : ""}`}>
+                    {redisQuery.data?.error ? (
+                      <span className="text-red-400">{redisQuery.data.error}</span>
                     ) : (
-                      <span className="text-green-400">Counter: {redisMutation.data?.count} ({redisMutation.data?.ms}ms)</span>
+                      <span className="text-green-400">Counter: {redisQuery.data?.count} ({redisQuery.data?.ms}ms)</span>
                     )}
                   </div>
                   <button
-                    onClick={() => redisMutation.mutate()}
-                    disabled={redisMutation.isPending}
+                    onClick={() => redisQuery.refetch()}
+                    disabled={redisQuery.isFetching}
                     className="bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white px-4 py-2 rounded-lg font-medium cursor-pointer w-fit"
                   >
-                    {redisMutation.isPending ? "Testing..." : "Increment Counter"}
+                    {redisQuery.isFetching ? "Testing..." : "Increment Counter"}
                   </button>
                 </div>
               </section>
@@ -113,19 +117,19 @@ export function App() {
               <section>
                 <h2 className="text-2xl font-bold mb-4">Postgres</h2>
                 <div className="grid gap-4">
-                  <div className={`bg-[#141414] rounded-lg px-4 py-2 font-mono text-sm w-fit min-h-[36px] ${postgresMutation.data ? "" : "invisible"} ${postgresMutation.isPending ? "opacity-50" : ""}`}>
-                    {postgresMutation.data?.error ? (
-                      <span className="text-red-400">{postgresMutation.data.error}</span>
+                  <div className={`bg-[#141414] rounded-lg px-4 py-2 font-mono text-sm w-fit min-h-[36px] ${postgresQuery.data ? "" : "invisible"} ${postgresQuery.isFetching ? "opacity-50" : ""}`}>
+                    {postgresQuery.data?.error ? (
+                      <span className="text-red-400">{postgresQuery.data.error}</span>
                     ) : (
-                      <span className="text-green-400">Counter: {postgresMutation.data?.count} ({postgresMutation.data?.ms}ms)</span>
+                      <span className="text-green-400">Counter: {postgresQuery.data?.count} ({postgresQuery.data?.ms}ms)</span>
                     )}
                   </div>
                   <button
-                    onClick={() => postgresMutation.mutate()}
-                    disabled={postgresMutation.isPending}
+                    onClick={() => postgresQuery.refetch()}
+                    disabled={postgresQuery.isFetching}
                     className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-4 py-2 rounded-lg font-medium cursor-pointer w-fit"
                   >
-                    {postgresMutation.isPending ? "Testing..." : "Increment Counter"}
+                    {postgresQuery.isFetching ? "Testing..." : "Increment Counter"}
                   </button>
                 </div>
               </section>
